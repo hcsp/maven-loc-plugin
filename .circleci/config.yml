@@ -1,0 +1,27 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/openjdk:8u212-jdk-stretch
+    steps:
+      - checkout
+      - restore_cache:
+          key: hcsp-{{ checksum "pom.xml" }}
+      - run:
+          name: Verify whitelist
+          command: ./.circleci/verifyWhitelist.sh
+      - run:
+          name: Run Maven compile
+          command: mvn compile | tee output.txt
+      - run:
+          name: Check loc result
+          command: grep '被统计的代码行数为23' -r . --include=output.txt
+      - save_cache: # saves the project dependencies
+          paths:
+            - ~/.m2
+          key: hcsp-{{ checksum "pom.xml" }}
+workflows:
+  version: 2
+  default:
+    jobs:
+      - test
