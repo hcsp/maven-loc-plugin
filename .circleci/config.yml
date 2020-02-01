@@ -11,11 +11,8 @@ jobs:
           name: Verify whitelist
           command: ./.circleci/verifyWhitelist.sh
       - run:
-          name: Run Maven compile
-          command: mvn compile | tee output.txt
-      - run:
-          name: Check loc result
-          command: grep '被统计的代码行数为23' -r . --include=output.txt
+          name: Run Maven tests
+          command: mvn clean test
       - save_cache: # saves the project dependencies
           paths:
             - ~/.m2
